@@ -1,0 +1,29 @@
+trigger:
+- main
+
+pool:
+   vmImage:'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y nginx
+  displayName: 'Install Nginx'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/nginx_artifact.zip'
+    replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/nginx_artifact.zip'
+    artifactName: 'nginx_artifact'
